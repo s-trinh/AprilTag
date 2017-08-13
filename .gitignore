@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Qt, CMake and temporary files
+CMakeLists.txt.user*
+*/CMakeFiles
+CMakeCache.txt
+*~
