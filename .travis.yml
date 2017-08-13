@@ -18,7 +18,7 @@ before_install:
   - "if [ $TRAVIS_OS_NAME = 'osx' ]; then brew tap homebrew/science; fi"
   - "if [ $TRAVIS_OS_NAME = 'osx' ]; then brew install opencv3; fi"
   - "if [ $TRAVIS_OS_NAME = 'osx' ]; then export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/opt/opencv3/lib/pkgconfig; fi"
-  - "if [ $TRAVIS_OS_NAME = 'osx' ]; then export CMAKE_MODULE_PATH=$CMAKE_MODULE_PATH:/usr/local/opt/opencv3/share/OpenCV; fi"
+  - "if [ $TRAVIS_OS_NAME = 'osx' ]; then export OpenCV_DIR=$OpenCV_DIR:/usr/local/opt/opencv3; fi"
   
   # Get libs for Linux
   - "if [ $TRAVIS_OS_NAME = 'linux' ]; then sudo apt-get update -qq; fi"
