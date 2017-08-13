@@ -7,6 +7,11 @@ file(GLOB lib_hdrs *.h common/*.h)
 
 find_package (Threads REQUIRED)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+if(CMAKE_COMPILER_IS_GNUCXX AND UNIX)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+endif()
+
 add_library(APRILTAG_LIBRARY ${lib_srcs} ${lib_hdrs})
 target_link_libraries( APRILTAG_LIBRARY ${CMAKE_THREAD_LIBS_INIT} )
 
