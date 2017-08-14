@@ -21,6 +21,7 @@ before_build:
   - cmd: mkdir build
   - cmd: cd build
   - cmd: cmake -G "%generator%" -DCMAKE_INSTALL_PREFIX=..\install ..
+  - cmd: dir
 
 build_script:
   - msbuild C:\projects\apriltag\build\apriltag.sln
