@@ -2,17 +2,29 @@ project(AprilTag-crossplatform)
 
 cmake_minimum_required ( VERSION 2.8 )
 
+if(WIN32 AND MSVC)
+  add_subdirectory(pthreads-win32)
+endif()
 add_subdirectory(apriltag-2016-12-01)
 
-find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
-
-# set the list of source files
-set(test_cpp
-  #${CMAKE_CURRENT_SOURCE_DIR}/example/apriltag_demo.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/example/opencv_demo.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/example/opencv_demo_offline.cc
-)
+if(UNIX) #OpenCV is installed on Travis
+  find_package(OpenCV REQUIRED)
+  include_directories(${OpenCV_INCLUDE_DIRS})
+  
+  # set the list of source files
+  set(test_cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/example/apriltag_demo.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/example/opencv_demo.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/example/opencv_demo_offline.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/example/demo_offline_simple.cc
+  )
+else()
+  # set the list of source files
+  set(test_cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/example/apriltag_demo.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/example/demo_offline_simple.cc
+  )
+endif()
 
 # Copy test image
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/example/AprilTag.pgm ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)

@@ -118,10 +118,26 @@ static void getopt_modify_string(char **str, char *newvalue)
         free(old);
 }
 
+static bool str_starts_with2(const char *haystack, const char *needle)
+{
+  assert(haystack != NULL);
+  assert(needle != NULL);
+
+  // haystack[pos] doesn't have to be compared to zero; if it were
+  // zero, it either doesn't match needle (in which case the loop
+  // terminates) or it matches needle[pos] (in which case the loop
+  // terminates).
+  int pos = 0;
+  while (haystack[pos] == needle[pos] && needle[pos] != 0)
+    pos++;
+
+  return (needle[pos] == 0);
+}
+
 static char *get_arg_assignment(char *arg)
 {
     // not an arg starting with "--"?
-    if (!str_starts_with(arg, "--")) {
+    if (!str_starts_with2(arg, "--")) {
         return NULL;
     }
 

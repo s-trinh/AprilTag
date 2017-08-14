@@ -32,8 +32,6 @@ either expressed or implied, of the Regents of The University of Michigan.
 
 #include <iostream>
 
-#include "opencv2/opencv.hpp"
-
 #include "apriltag.h"
 #include "tag36h11.h"
 #include "tag36h10.h"
@@ -41,9 +39,9 @@ either expressed or implied, of the Regents of The University of Michigan.
 #include "tag25h9.h"
 #include "tag25h7.h"
 #include "common/getopt.h"
+#include "common/image_u8.h"
 
 using namespace std;
-using namespace cv;
 
 
 int main(int argc, char *argv[])
@@ -69,11 +67,6 @@ int main(int argc, char *argv[])
         getopt_do_usage(getopt);
         exit(0);
     }
-
-    // Read image
-    Mat gray = imread(getopt_get_string(getopt, "input"), IMREAD_GRAYSCALE);
-    Mat frame;
-    cvtColor(gray, frame, COLOR_GRAY2BGR);
 
     // Initialize tag detector with options
     apriltag_family_t *tf = NULL;
@@ -104,50 +97,13 @@ int main(int argc, char *argv[])
     td->refine_decode = getopt_get_bool(getopt, "refine-decode");
     td->refine_pose = getopt_get_bool(getopt, "refine-pose");
 
-    // Make an image_u8_t header for the Mat data
-    //image_u8_t im = { .width = gray.cols,
-    //    .height = gray.rows,
-    //    .stride = gray.cols,
-    //    .buf = gray.data
-    //};
-    image_u8_t im{ gray.cols, gray.rows, gray.cols, gray.data };
+    image_u8_t *im = image_u8_create_from_pnm(getopt_get_string(getopt, "input"));
 
-    zarray_t *detections = apriltag_detector_detect(td, &im);
+    zarray_t *detections = apriltag_detector_detect(td, im);
     cout << zarray_size(detections) << " tags detected" << endl;
 
-    // Draw detection outlines
-    for (int i = 0; i < zarray_size(detections); i++) {
-        apriltag_detection_t *det;
-        zarray_get(detections, i, &det);
-        line(frame, Point(det->p[0][0], det->p[0][1]),
-                 Point(det->p[1][0], det->p[1][1]),
-                 Scalar(0, 0xff, 0), 2);
-        line(frame, Point(det->p[0][0], det->p[0][1]),
-                 Point(det->p[3][0], det->p[3][1]),
-                 Scalar(0, 0, 0xff), 2);
-        line(frame, Point(det->p[1][0], det->p[1][1]),
-                 Point(det->p[2][0], det->p[2][1]),
-                 Scalar(0xff, 0, 0), 2);
-        line(frame, Point(det->p[2][0], det->p[2][1]),
-                 Point(det->p[3][0], det->p[3][1]),
-                 Scalar(0xff, 0, 0), 2);
-
-        stringstream ss;
-        ss << det->id;
-        String text = ss.str();
-        int fontface = FONT_HERSHEY_SCRIPT_SIMPLEX;
-        double fontscale = 1.0;
-        int baseline;
-        Size textsize = getTextSize(text, fontface, fontscale, 2,
-                                        &baseline);
-        putText(frame, text, Point(det->c[0]-textsize.width/2,
-                                   det->c[1]+textsize.height/2),
-                fontface, fontscale, Scalar(0xff, 0x99, 0), 2);
-    }
     zarray_destroy(detections);
-
-    imshow("Tag Detections", frame);
-    waitKey(0);
+    image_u8_destroy(im);
 
     apriltag_detector_destroy(td);
     if (!strcmp(famname, "tag36h11"))

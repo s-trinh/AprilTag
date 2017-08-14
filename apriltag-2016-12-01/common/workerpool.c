@@ -31,8 +31,13 @@ either expressed or implied, of the Regents of The University of Michigan.
 */
 
 #define __USE_GNU
+#ifdef _MSC_VER
+#include "../pthreads-win32/pthread.h"
+#include "../pthreads-win32/sched.h"
+#else
 #include <pthread.h>
 #include <sched.h>
+#endif
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -204,8 +209,69 @@ void workerpool_run(workerpool_t *wp)
     }
 }
 
+#if _WIN32
+// Source: https://stackoverflow.com/a/735472
+///* This code is public domain -- Will Hartung 4/9/09 */
+size_t getline(char **lineptr, size_t *n, FILE *stream) {
+    char *bufptr = NULL;
+    char *p = bufptr;
+    size_t size;
+    int c;
+
+    if (lineptr == NULL) {
+        return -1;
+    }
+    if (stream == NULL) {
+        return -1;
+    }
+    if (n == NULL) {
+        return -1;
+    }
+    bufptr = *lineptr;
+    size = *n;
+
+    c = fgetc(stream);
+    if (c == EOF) {
+        return -1;
+    }
+    if (bufptr == NULL) {
+        bufptr = malloc(128);
+        if (bufptr == NULL) {
+            return -1;
+        }
+        size = 128;
+    }
+    p = bufptr;
+    while(c != EOF) {
+        int offset = p - bufptr;
+        if ((p - bufptr + 1) > size) {
+            size = size + 128;
+            bufptr = realloc(bufptr, size);
+            if (bufptr == NULL) {
+                return -1;
+            }
+            p = bufptr + offset;
+        }
+        *p++ = c;
+        if (c == '\n') {
+            break;
+        }
+        c = fgetc(stream);
+    }
+
+    *p++ = '\0';
+    *lineptr = bufptr;
+    *n = size;
+
+    return p - bufptr - 1;
+}
+#endif
+
 int workerpool_get_nprocs()
 {
+#ifdef _MSC_VER
+  int nproc = 1;
+#else
     FILE * f = fopen("/proc/cpuinfo", "r");
     size_t n = 0;
     char * buf = NULL;
@@ -225,6 +291,7 @@ int workerpool_get_nprocs()
     }
 
     free(buf);
+#endif
 
     return nproc;
 }
