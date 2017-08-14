@@ -105,12 +105,11 @@ int main(int argc, char *argv[])
     td->refine_pose = getopt_get_bool(getopt, "refine-pose");
 
     // Make an image_u8_t header for the Mat data
-    //image_u8_t im = { .width = gray.cols,
-    //    .height = gray.rows,
-    //    .stride = gray.cols,
-    //    .buf = gray.data
-    //};
-    image_u8_t im{ gray.cols, gray.rows, gray.cols, gray.data };
+    image_u8_t im = { .width = gray.cols,
+       .height = gray.rows,
+       .stride = gray.cols,
+       .buf = gray.data
+    };
 
     zarray_t *detections = apriltag_detector_detect(td, &im);
     cout << zarray_size(detections) << " tags detected" << endl;
