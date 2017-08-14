@@ -1,0 +1,27 @@
+platform:
+  - Win32
+  - Win64
+
+environment:
+  home: C:\projects
+  matrix:
+  - generator : Visual Studio 14
+  - generator : Visual Studio 14 Win64
+
+version: '{branch}-{build}'
+
+os: Visual Studio 2015
+
+branches:
+  only:
+    - build_MSVC_14
+
+configuration: Release
+
+before_build:
+  - cmd: mkdir build
+  - cmd: cd build
+  - cmd: '%cmake% -G "%generator%" -DCMAKE_INSTALL_PREFIX=..\install ..\AprilTag'
+
+build_script:
+  - msbuild C:\projects\build\AprilTag.sln
