@@ -24,4 +24,4 @@ before_build:
   - cmd: dir
 
 build_script:
-  - msbuild C:\projects\apriltag\build\apriltag.sln
+  - msbuild C:\projects\apriltag\build\AprilTag-crossplatform.sln
