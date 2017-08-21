@@ -31,7 +31,9 @@ either expressed or implied, of the Regents of The University of Michigan.
 */
 
 #include <iostream>
+#include <config.h>
 
+#ifdef HAVE_OPENCV
 #include "opencv2/opencv.hpp"
 
 #include "apriltag.h"
@@ -44,6 +46,8 @@ either expressed or implied, of the Regents of The University of Michigan.
 
 using namespace std;
 using namespace cv;
+
+std::string DATA_LOCATION_PREFIX = APRIL_TAG_DATA_DIR;
 
 
 int main(int argc, char *argv[])
@@ -61,7 +65,7 @@ int main(int argc, char *argv[])
     getopt_add_bool(getopt, '0', "refine-edges", 1, "Spend more time trying to align edges of tags");
     getopt_add_bool(getopt, '1', "refine-decode", 0, "Spend more time trying to decode tags");
     getopt_add_bool(getopt, '2', "refine-pose", 0, "Spend more time trying to precisely localize tags");
-    getopt_add_string(getopt, 'i', "input", "AprilTag.pgm", "Image to read");
+    getopt_add_string(getopt, 'i', "input", DATA_LOCATION_PREFIX.c_str(), "Image to read");
 
     if (!getopt_parse(getopt, argc, argv, 1) ||
             getopt_get_bool(getopt, "help")) {
@@ -105,11 +109,15 @@ int main(int argc, char *argv[])
     td->refine_pose = getopt_get_bool(getopt, "refine-pose");
 
     // Make an image_u8_t header for the Mat data
+#ifdef _MSC_VER
+    image_u8_t im{ gray.cols, gray.rows, gray.cols, gray.data };
+#else
     image_u8_t im = { .width = gray.cols,
-        .height = gray.rows,
-        .stride = gray.cols,
-        .buf = gray.data
+      .height = gray.rows,
+      .stride = gray.cols,
+      .buf = gray.data
     };
+#endif
 
     zarray_t *detections = apriltag_detector_detect(td, &im);
     cout << zarray_size(detections) << " tags detected" << endl;
@@ -163,3 +171,11 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+#else
+#include <iostream>
+
+int main() {
+    std::cout << "This example needs OpenCV to run." << std::endl;
+    return 0;
+}
+#endif

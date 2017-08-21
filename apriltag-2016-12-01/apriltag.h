@@ -44,7 +44,11 @@ extern "C" {
 #include "common/zarray.h"
 #include "common/workerpool.h"
 #include "common/timeprofile.h"
+#ifdef _MSC_VER
+#include "../pthreads-win32/pthread.h"
+#else
 #include <pthread.h>
+#endif
 
 #define APRILTAG_TASKS_PER_THREAD_TARGET 10
 
@@ -135,7 +139,7 @@ struct apriltag_detector
     // detection of quads can be done on a lower-resolution image,
     // improving speed at a cost of pose accuracy and a slight
     // decrease in detection rate. Decoding the binary payload is
-    // still done at full resolution. .
+    // still done at full resolution.
     float quad_decimate;
 
     // What Gaussian blur should be applied to the segmented image
