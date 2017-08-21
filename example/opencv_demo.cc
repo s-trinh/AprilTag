@@ -31,7 +31,9 @@ either expressed or implied, of the Regents of The University of Michigan.
 */
 
 #include <iostream>
+#include <config.h>
 
+#ifdef HAVE_OPENCV
 #include "opencv2/opencv.hpp"
 
 #include "apriltag.h"
@@ -111,11 +113,15 @@ int main(int argc, char *argv[])
         cvtColor(frame, gray, COLOR_BGR2GRAY);
 
         // Make an image_u8_t header for the Mat data
+#ifdef _MSC_VER
+        image_u8_t im{ gray.cols, gray.rows, gray.cols, gray.data };
+#else
         image_u8_t im = { .width = gray.cols,
             .height = gray.rows,
             .stride = gray.cols,
             .buf = gray.data
         };
+#endif
 
         zarray_t *detections = apriltag_detector_detect(td, &im);
         cout << zarray_size(detections) << " tags detected" << endl;
@@ -171,3 +177,11 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+#else
+#include <iostream>
+
+int main() {
+    std::cout << "This example needs OpenCV to run." << std::endl;
+    return 0;
+}
+#endif

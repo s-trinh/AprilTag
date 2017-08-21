@@ -43,6 +43,8 @@ either expressed or implied, of the Regents of The University of Michigan.
 
 using namespace std;
 
+std::string DATA_LOCATION_PREFIX = APRIL_TAG_DATA_DIR;
+
 
 int main(int argc, char *argv[])
 {
@@ -59,7 +61,7 @@ int main(int argc, char *argv[])
     getopt_add_bool(getopt, '0', "refine-edges", 1, "Spend more time trying to align edges of tags");
     getopt_add_bool(getopt, '1', "refine-decode", 0, "Spend more time trying to decode tags");
     getopt_add_bool(getopt, '2', "refine-pose", 0, "Spend more time trying to precisely localize tags");
-    getopt_add_string(getopt, 'i', "input", "AprilTag.pgm", "Image to read");
+    getopt_add_string(getopt, 'i', "input", DATA_LOCATION_PREFIX.c_str(), "Image to read");
 
     if (!getopt_parse(getopt, argc, argv, 1) ||
             getopt_get_bool(getopt, "help")) {
