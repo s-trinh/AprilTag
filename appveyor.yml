@@ -13,10 +13,9 @@ environment:
 
 os: Visual Studio 2015
 
-branches:
-  only:
-    - build_MSVC_14
-    - build_MSVC_14_test
+# branches:
+  # only:
+    # - build_MSVC_14
 
 configuration: Release
 
