@@ -1,4 +1,11 @@
-# AprilTag
+# Official AprilTag 3 is [here](https://github.com/AprilRobotics/apriltag).
+
+Official version should built with Visual Studio for Windows platform now. 
+
+---
+
+# Obsolete repo
+## AprilTag
 [![Build Status](https://travis-ci.org/s-trinh/AprilTag.svg?branch=master)](https://travis-ci.org/s-trinh/AprilTag?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/q1k2kikjpuq1vn2e/branch/master?svg=true)](https://ci.appveyor.com/project/s-trinh/apriltag/branch/master)
 
